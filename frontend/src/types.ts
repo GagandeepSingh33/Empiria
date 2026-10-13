@@ -40,6 +40,7 @@ export interface AuthSessionResponse {
   active_membership?: ActiveMembership
   available_memberships?: ActiveMembership[]
   csrf_token?: string
+  session_token?: string
   is_super_admin?: boolean
 }
 

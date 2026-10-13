@@ -68,6 +68,7 @@ class SessionResponse(BaseModel):
     active_membership: Optional[MembershipSummaryResponse] = None
     available_memberships: list[MembershipSummaryResponse] = []
     csrf_token: Optional[str] = None
+    session_token: Optional[str] = None
     is_super_admin: bool = False
 
 

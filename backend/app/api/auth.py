@@ -140,6 +140,7 @@ def login(req: LoginRequest, response: Response, db: Session = Depends(get_db)):
         active_membership=active_summary,
         available_memberships=avail_summaries,
         csrf_token=csrf_token,
+        session_token=raw_token,
         is_super_admin=account.is_super_admin,
     )
 

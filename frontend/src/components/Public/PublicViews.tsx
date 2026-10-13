@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { api } from '../../api'
 import {
   ArrowLeft,
   Mail,
@@ -33,15 +34,7 @@ export const ForgotPasswordView: React.FC<PublicPageProps> = ({ onNavigate }) =>
     setSubmitting(true)
     setErrorMsg(null)
     try {
-      const res = await fetch('/internal/v1/auth/credential-recovery', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim().toLowerCase() }),
-      })
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        throw new Error(err.detail || 'Recovery request failed')
-      }
+      await api.requestCredentialRecovery(email.trim().toLowerCase())
       setSubmitted(true)
     } catch (err: any) {
       setErrorMsg(err.message || 'Unable to process password reset request.')
@@ -278,18 +271,7 @@ export const ResetPasswordView: React.FC<PublicPageProps> = ({ onNavigate }) => 
     setSubmitting(true)
     setErrorMsg(null)
     try {
-      const res = await fetch('/internal/v1/auth/credential-recovery/confirm', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          token: token.trim(),
-          new_password: newPassword,
-        }),
-      })
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        throw new Error(err.detail || 'Password reset confirmation failed')
-      }
+      await api.confirmCredentialRecovery(token.trim(), newPassword)
       setSuccess(true)
     } catch (err: any) {
       setErrorMsg(err.message || 'Invalid or expired recovery token.')
@@ -540,20 +522,7 @@ export const AcceptInvitationView: React.FC<PublicPageProps> = ({ onNavigate }) 
     setSubmitting(true)
     setErrorMsg(null)
     try {
-      const res = await fetch('/internal/v1/auth/invitations/accept', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          token: token.trim(),
-          first_name: firstName.trim(),
-          last_name: lastName.trim(),
-          password,
-        }),
-      })
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        throw new Error(err.detail || 'Invitation acceptance failed')
-      }
+      await api.acceptInvitation(token.trim(), firstName.trim(), lastName.trim(), password)
       setAccepted(true)
     } catch (err: any) {
       setErrorMsg(err.message || 'Invalid, expired, or already used invitation token.')

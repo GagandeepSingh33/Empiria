@@ -33,9 +33,11 @@ export function getCsrfToken(): string | null {
   return inMemoryCsrfToken
 }
 
-const API_BASE_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
+const rawApiUrl = (import.meta.env.VITE_API_URL || '').trim().replace(/\/$/, '')
+// If VITE_API_URL points to the obsolete/suspended Render service, fallback to relative URL for Vercel rewrites
+export const API_BASE_URL = rawApiUrl === 'https://empiria-api.onrender.com' ? '' : rawApiUrl
 
-async function request<T>(
+export async function request<T>(
   url: string,
   options: RequestInit = {}
 ): Promise<T> {
@@ -44,6 +46,12 @@ async function request<T>(
 
   if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {
     headers.set('Content-Type', 'application/json')
+  }
+
+  // Attach stored session Bearer token for cross-origin & Safari/Chrome cookie resilience
+  const storedToken = typeof localStorage !== 'undefined' ? localStorage.getItem('empiria_session_token') : null
+  if (storedToken && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${storedToken}`)
   }
 
   // Attach CSRF token on state-changing requests
@@ -82,6 +90,9 @@ export const api = {
       if (res.csrf_token) {
         setCsrfToken(res.csrf_token)
       }
+      if (res.session_token && typeof localStorage !== 'undefined') {
+        localStorage.setItem('empiria_session_token', res.session_token)
+      }
       return res
     } catch {
       return { authenticated: false }
@@ -96,6 +107,9 @@ export const api = {
     if (res.csrf_token) {
       setCsrfToken(res.csrf_token)
     }
+    if (res.session_token && typeof localStorage !== 'undefined') {
+      localStorage.setItem('empiria_session_token', res.session_token)
+    }
     return res
   },
 
@@ -104,7 +118,32 @@ export const api = {
       method: 'POST',
     })
     setCsrfToken(null)
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('empiria_session_token')
+    }
     return res
+  },
+
+  // Credential Recovery & Invitations
+  async requestCredentialRecovery(email: string): Promise<any> {
+    return request<any>('/internal/v1/auth/credential-recovery', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    })
+  },
+
+  async confirmCredentialRecovery(token: string, newPassword: string): Promise<any> {
+    return request<any>('/internal/v1/auth/credential-recovery/confirm', {
+      method: 'POST',
+      body: JSON.stringify({ token, new_password: newPassword }),
+    })
+  },
+
+  async acceptInvitation(token: string, firstName: string, lastName: string, password: string): Promise<any> {
+    return request<any>('/internal/v1/auth/invitations/accept', {
+      method: 'POST',
+      body: JSON.stringify({ token, first_name: firstName, last_name: lastName, password }),
+    })
   },
 
   // Competency Frameworks
