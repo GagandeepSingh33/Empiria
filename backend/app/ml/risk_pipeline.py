@@ -78,7 +78,10 @@ except (ImportError, OSError) as _sk_err:
             res.extend([a[:split_idx], a[split_idx:]])
         return res
 
-import joblib
+try:
+    import joblib
+except ImportError:
+    joblib = None
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 
