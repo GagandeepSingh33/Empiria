@@ -23,8 +23,10 @@ def _get_engine_url_and_args(raw_url: str):
         or "render.com" in parsed.netloc
     )
 
-    # Strip parameters that pg8000 rejects
-    clean_qs = {k: v for k, v in qs.items() if k not in ("sslmode", "ssl")}
+    # Only keep query parameters explicitly supported by pg8000.connect
+    # This prevents errors from libpq-only parameters like 'channel_binding', 'sslmode', etc.
+    valid_pg8000_params = {"timeout", "tcp_keepalive", "application_name", "replication"}
+    clean_qs = {k: v for k, v in qs.items() if k in valid_pg8000_params}
     flat_qs = [(k, v[0]) for k, v in clean_qs.items()]
     new_query = urllib.parse.urlencode(flat_qs)
     clean_url = urllib.parse.urlunsplit(
