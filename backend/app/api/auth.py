@@ -95,13 +95,14 @@ def login(req: LoginRequest, response: Response, db: Session = Depends(get_db)):
     )
     db.commit()
 
-    # Set secure session cookie
+    # Set secure session cookie (production-aware for cross-origin support)
+    is_prod = str(settings.environment).lower() == "production"
     response.set_cookie(
         key=settings.session_cookie_name,
         value=raw_token,
         httponly=True,
-        samesite="lax",
-        secure=False,  # Dev local
+        samesite="none" if is_prod else "lax",
+        secure=True if is_prod else False,
         expires=int(expires_at.timestamp()),
         path="/",
     )
@@ -156,7 +157,13 @@ def logout(response: Response, current_user: CurrentUser = Depends(require_authe
     )
     db.commit()
 
-    response.delete_cookie(settings.session_cookie_name, path="/")
+    is_prod = str(settings.environment).lower() == "production"
+    response.delete_cookie(
+        settings.session_cookie_name,
+        path="/",
+        samesite="none" if is_prod else "lax",
+        secure=True if is_prod else False,
+    )
     return {"message": "Logged out successfully"}
 
 

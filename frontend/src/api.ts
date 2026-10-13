@@ -33,10 +33,13 @@ export function getCsrfToken(): string | null {
   return inMemoryCsrfToken
 }
 
+const API_BASE_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
+
 async function request<T>(
   url: string,
   options: RequestInit = {}
 ): Promise<T> {
+  const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`
   const headers = new Headers(options.headers || {})
 
   if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {
@@ -49,7 +52,7 @@ async function request<T>(
     headers.set('X-CSRF-Token', inMemoryCsrfToken)
   }
 
-  const res = await fetch(url, {
+  const res = await fetch(fullUrl, {
     ...options,
     headers,
     credentials: 'include',

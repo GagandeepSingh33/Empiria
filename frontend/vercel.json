@@ -2,6 +2,14 @@
   "framework": "vite",
   "rewrites": [
     {
+      "source": "/internal/:path*",
+      "destination": "https://empiria-api-59s7.onrender.com/internal/:path*"
+    },
+    {
+      "source": "/health/:path*",
+      "destination": "https://empiria-api-59s7.onrender.com/health/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
