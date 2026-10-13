@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: empiria-platform
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CSRF_SECRET
+        generateValue: true
+      - key: SESSION_COOKIE_NAME
+        value: empiria_session
+      - key: SESSION_EXPIRY_HOURS
+        value: "24"
+      - key: ENVIRONMENT
+        value: production
+      - key: MIN_COHORT_DEFAULT
+        value: "5"
+      - key: MIN_COHORT_THRESHOLD
+        value: "5"

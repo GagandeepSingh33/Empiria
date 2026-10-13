@@ -1,0 +1,101 @@
+# =========================================================================
+# EMPIRIA: Comprehensive Git Ignore Rules
+# =========================================================================
+
+# --- Python & Bytecode ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# --- Python Virtual Environments ---
+.venv/
+.venv*/
+venv/
+venv*/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# --- Reconciled Docs & Internal Binary Docs ---
+EMPIRIA_Reconciled_Documentation/
+*.docx
+
+# --- Testing, Coverage & Profiling ---
+.pytest_cache/
+.coverage
+.coverage.*
+nosetests.xml
+coverage.xml
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+
+# --- Machine Learning Models & Binary Artifacts ---
+*.joblib
+*.pkl
+*.pickle
+*.h5
+*.onnx
+*.pt
+*.pth
+backend/storage/models/*.joblib
+
+# --- Frontend & Node Dependencies ---
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# --- Environment Variables & Sensitive Credentials ---
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.cert
+*.id_rsa
+
+# --- Database & Local Storage ---
+*.sqlite3
+*.db
+pgdata/
+*.sql.gz
+backend/storage/uploads/*
+!backend/storage/uploads/.gitkeep
+
+# --- IDEs & System Files ---
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
